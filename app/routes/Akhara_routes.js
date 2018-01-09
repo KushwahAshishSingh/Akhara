@@ -30,7 +30,7 @@ module.exports = function(app, db) {
         },
         phone: req.body.phone,
         email: req.body.email,
-
+        password: req.body.password,
         subscriptionStart: req.body.subscriptionStart,
         subscriptionEnd: req.body.subscriptionEnd,
         discount: req.body.discount
@@ -57,6 +57,7 @@ module.exports = function(app, db) {
                 pincode: req.body.address.pincode
             },
             phone: req.body.phone,
+            password: req.body.password,
             email: req.body.email,
             agentId: req.body.agentId,
             subscriptionStart: req.body.subscriptionStart,
@@ -76,16 +77,12 @@ module.exports = function(app, db) {
     });
 });
 
-
-
     app.post('/Find', (req, res) => {
 
         const resultArray = [];
     const firstName = req.body.firstName;
     const phone = req.body.phone;
-    const email = req.body.email;
     // const Districts = req.body.address.district;
-
     var Results = db.collection('Akhara').find(
         { $or : [ {phone: phone},
                 {firstName : firstName},
@@ -103,6 +100,49 @@ module.exports = function(app, db) {
         }
     });
 });
+
+app.post('/Delete', (req, res) => {
+
+    const Akharas = {
+        id: req.body.id,
+        firstName: req.body.firstName
+    };
+    var id = req.body.id;
+    db.collection('Akhara').deleteOne({"_id": ObjectId(id)}, {$set: Akharas}, function (err, result) {
+        if (err) {
+            res.send({error: 'An error has occurred'});
+        } else {
+            console.log('deleted');
+            res.send(result);
+        }
+    });
+});
+
+    app.post('/Login', (req, res) => {
+
+        const resultArray = [];
+    const email = req.body.email;
+    const password = req.body.password;
+    // const Districts = req.body.address.district;
+
+    var Results = db.collection('Akhara').find(
+        { $and : [ {email: email},
+                {password : password}
+                // ,{Dist: Districts}
+            ]});
+    Results.toArray(function(error, docs) {
+        resultArray.push(docs);
+
+        if (docs) {
+            res.send(resultArray);
+        }
+        else {
+            res.send({error: 'not in our database'});
+        }
+    });
+});
+
+
 
 };
 

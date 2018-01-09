@@ -1,5 +1,5 @@
-const lawyersRoutes = require('./lawyers_routes');
+const AkharaRoutes = require('./Akhara_routes');
 
 module.exports = function(app, db) {
-    lawyersRoutes(app, db);
+    AkharaRoutes(app, db);
 };
