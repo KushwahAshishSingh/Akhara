@@ -1,5 +1,6 @@
 var express = require('express');
 const MongoClient = require('mongodb').MongoClient;
+const multer = require('multer');
 const db = require('./config/db');
 var path = require('path');
 //var favicon = require('serve-favicon');
@@ -11,6 +12,7 @@ const fs = require('fs');
 const app = express();
 
 
+
 //const port = process.env.PORT || 3000;
 const port = 8000;
 
@@ -19,6 +21,7 @@ hbs.registerPartials(__dirname + '/views/partials');   // ll auto relocate the r
 app.set('view engine', 'hbs');   // setting hbs as the view engine.
 
 app.use(express.static(__dirname + '/public'));   // making something static in the project like html and css.
+app.use('/uploads', express.static('uploads'));
 
 hbs.registerHelper('getCurrentYear', () => {
   return new Date().getFullYear()

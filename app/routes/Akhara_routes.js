@@ -9,9 +9,38 @@ const password = require('mongodb').password;
 const firstName = require('mongodb').firstName;
 const phone = require('mongodb').phone;
 //var Dist = require('mongodb').address.pincode;
+const multer = require('multer');
+
+const storage = multer.diskStorage({             // upload where the data ll get saved
+   destination: function(req, file, cb) {
+       cb(null, './uploads/');
+   },
+    filename: function(req, file, cb) {
+       cb(null, new Date().toISOString() + file.originalname);
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png'){
+        cb(null, true);
+    } else {
+        cb(null, false);  // this ll reject the file
+    }
+}
+
+const upload = multer({storage: storage, limits: {
+    fileSize: 1024 * 1024 * 5
+    },
+    fileFilter: fileFilter
+    });
+
+
+
+
 
 module.exports = function(app, db) {
-    app.post('/Akhara', (req, res) => {
+    app.post('/Akhara',upload.single('productImage'), (req, res) => {
+        console.log(req.file);
         const errors = validateLawyer(req);
 
     console.log(req.body);
@@ -23,17 +52,18 @@ module.exports = function(app, db) {
     const Akharas = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
-        address: {
-            streetAddress: req.body.address.streetAddress,
-            district: req.body.address.district,
-            pincode: req.body.address.pincode
-        },
+        // address: {
+        //     streetAddress: req.body.address.streetAddress,
+        //     district: req.body.address.district,
+        //     pincode: req.body.address.pincode
+        // },
         phone: req.body.phone,
         email: req.body.email,
         password: req.body.password,
         subscriptionStart: req.body.subscriptionStart,
         subscriptionEnd: req.body.subscriptionEnd,
-        discount: req.body.discount
+        discount: req.body.discount,
+        productImage: req.file.path
     };
 
     db.collection('Akhara').insert(Akharas, (err, result) => {
@@ -62,7 +92,9 @@ module.exports = function(app, db) {
             agentId: req.body.agentId,
             subscriptionStart: req.body.subscriptionStart,
             subscriptionEnd: req.body.subscriptionEnd,
-            discount: req.body.discount
+            discount: req.body.discount,
+            productImage: req.file.path
+
         };
     var id = req.body.id;
 
@@ -168,31 +200,31 @@ function validateLawyer(req) {
         });
     }
 
-    if (!req.body.address) {
-        errors.push({
-            field: 'address',
-            message: 'Address is required'
-        });
-    } else {
-        if (!req.body.address.streetAddress) {
-            errors.push({
-                field: 'streetAddress',
-                message: 'Street Address is required'
-            });
-        }
-        if (!req.body.address.district) {
-            errors.push({
-                field: 'district',
-                message: 'District is required'
-            });
-        }
-        if (!req.body.address.pincode) {
-            errors.push({
-                field: 'pincode',
-                message: 'Pincode is required'
-            });
-        }
-    }
+    // if (!req.body.address) {
+    //     errors.push({
+    //         field: 'address',
+    //         message: 'Address is required'
+    //     });
+    // } else {
+    //     if (!req.body.address.streetAddress) {
+    //         errors.push({
+    //             field: 'streetAddress',
+    //             message: 'Street Address is required'
+    //         });
+    //     }
+    //     if (!req.body.address.district) {
+    //         errors.push({
+    //             field: 'district',
+    //             message: 'District is required'
+    //         });
+    //     }
+    //     if (!req.body.address.pincode) {
+    //         errors.push({
+    //             field: 'pincode',
+    //             message: 'Pincode is required'
+    //         });
+    //     }
+    // }
 
 
     if (!req.body.subscriptionStart) {
