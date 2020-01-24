@@ -33,7 +33,7 @@ app.use((req, res, next) => {
   var log = `${now}; ${req.method} ${req.url}`;  // for getting the current time and date, and also the url and request page
 
   console.log(log);
-  fs.appendFile('server.log', log + '\n')    // it will create the log file and maintain the log record
+ //fs.appendFile('server.log', log + '\n')    // it will create the log file and maintain the log record
   next();
 });
 
